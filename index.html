@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Gacha RPG Game</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.4.umd.min.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header with connection status -->
+        <div class="section">
+            <div class="section-header">
+                <h1>Web3 Gacha RPG</h1>
+                <div>
+                    <button id="connect-wallet" class="button">Connect Wallet</button>
+                    <span id="wallet-status">Not connected</span>
+                </div>
+            </div>
+            <div>
+                <p>Balance: <span id="balance">0</span> ETH</p>
+            </div>
+        </div>
+        
+        <!-- Character Inventory Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Character Inventory</h2>
+                <button id="refresh-inventory" class="button">Refresh</button>
+            </div>
+            <div id="character-cards" class="character-cards">
+                <p>Connect your wallet to view characters.</p>
+            </div>
+        </div>
+        
+        <!-- Gacha Pull Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Gacha Pull</h2>
+                <p>Cost: 0.0001 ETH per pull</p>
+            </div>
+            <div id="pull-animation" class="pull-animation">
+                <div class="orb">
+                    <div class="inner-light"></div>
+                </div>
+                <h2>Pulling...</h2>
+            </div>
+            <div id="gacha-result" class="gacha-result">
+                <h3>You pulled a <span id="pulled-rarity"></span>★ character!</h3>
+                <p>ID: <span id="pulled-id"></span></p>
+                <div id="pulled-character-details"></div>
+            </div>
+            <button id="pull-button" class="button">Pull Character (0.0001 ETH)</button>
+        </div>
+        
+        <!-- Battle Section -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Battle Arena</h2>
+                <p>Win reward: 0.0001 ETH</p>
+            </div>
+            <div id="battle-container">
+                <select id="character-select">
+                    <option value="">-- Select a character to battle --</option>
+                </select>
+                <div id="battle-area" class="battle-area">
+                    <div class="battle-character">
+                        <h3>Your Character</h3>
+                        <div id="player-character-details"></div>
+                        <div class="stat-bar">
+                            <div id="player-hp-bar" class="stat-fill hp-fill" style="width: 100%;"></div>
+                        </div>
+                        <p>HP: <span id="player-current-hp">0</span>/<span id="player-max-hp">0</span></p>
+                    </div>
+                    <div class="battle-enemy">
+                        <h3>Enemy</h3>
+                        <div id="enemy-details"></div>
+                        <div class="stat-bar">
+                            <div id="enemy-hp-bar" class="stat-fill hp-fill" style="width: 100%;"></div>
+                        </div>
+                        <p>HP: <span id="enemy-current-hp">0</span>/<span id="enemy-max-hp">0</span></p>
+                    </div>
+                </div>
+                <div id="battle-log" class="battle-log"></div>
+                <div id="battle-controls" class="battle-controls">
+                    <button id="attack-button" class="button">Attack</button>
+                    <button id="end-battle" class="button" style="display: none;">End Battle</button>
+                </div>
+                <button id="start-battle" class="button">Start Battle</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+    
+    <script src="contract-config.js"></script>
+    <script src="wallet.js"></script>
+    <script src="characters.js"></script>
+    <script src="battle.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
