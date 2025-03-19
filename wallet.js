@@ -112,6 +112,7 @@ async function checkBalance(amount) {
 async function initWallet() {
     connectWalletBtn.addEventListener('click', connectWallet);
     
+    
     // Check if MetaMask is installed
     if (window.ethereum) {
         // If user was previously connected, reconnect
