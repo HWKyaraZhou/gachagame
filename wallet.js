@@ -5,7 +5,7 @@ let contract;
 let userAddress;
 
 // DOM Elements for wallet
-const connectWalletBtn = document.getElementById('connect-wallet');
+//const connectWalletBtn = document.getElementById('connect-wallet');
 const walletStatus = document.getElementById('wallet-status');
 const balanceDisplay = document.getElementById('balance');
 
@@ -110,6 +110,7 @@ async function checkBalance(amount) {
 
 // Initialize wallet connection
 async function initWallet() {
+    const connectWalletBtn = document.getElementById('connect-wallet');
     connectWalletBtn.addEventListener('click', connectWallet);
     
     

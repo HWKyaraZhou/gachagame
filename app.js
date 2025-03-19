@@ -14,5 +14,3 @@ async function initApp() {
 
 // Start the app when the document is loaded
 document.addEventListener('DOMContentLoaded', initApp);
-initWallet();
-
