@@ -234,7 +234,7 @@ async function endBattleWithVictory() {
         // Update balance
         await updateBalance();
 
-        showNotification("Battle reward claimed: 0.0001 ETH", "success");
+        showNotification("Battle reward claimed: 0.0001 Sepolia", "success");
     } catch (error) {
         console.error("Failed to claim battle reward:", error);
         showNotification("Failed to claim battle reward: " + (error.data?.message || error.message), "error");
