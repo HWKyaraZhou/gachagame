@@ -16,7 +16,7 @@ struct Character:
 
 # Game economic constants
 PULL_COST: constant(uint256) = 100000000000000  # 0.0001 ether
-BATTLE_REWARD: constant(uint256) = 500000000000000  # 0.0005 ether
+BATTLE_REWARD: constant(uint256) = 1000000000000000  # 0.001 ether
 
 # State variables
 characterIdCounter: uint256
@@ -158,3 +158,31 @@ def withdrawFunds():
     """
     assert msg.sender == self.owner, "Only owner can withdraw"
     send(self.owner, self.balance)
+
+@external
+def removeDefeatedCharacter(characterId: uint256):
+    """
+    @notice Removes a character permanently after they are defeated in battle
+    @param characterId The ID of the character to remove
+    """
+    assert self.userCharacters[msg.sender][characterId].exists, "Character not found"
+    
+    # Remove character from storage
+    self.userCharacters[msg.sender][characterId].exists = False
+    
+    # Remove character from user's ID list
+    old_ids: DynArray[uint256, 100] = self.userCharacterIds[msg.sender]
+    new_ids: DynArray[uint256, 100] = []
+    
+    # Manually transfer IDs without using a loop
+    # Since we can't use loops directly, we need to copy elements one by one
+    # up to a reasonable maximum (for example, 50)
+    max_size: uint256 = 50
+    
+    for i in range(50):  # Using a literal value for range
+        if i >= len(old_ids):
+            break
+        if old_ids[i] != characterId:
+            new_ids.append(old_ids[i])
+    
+    self.userCharacterIds[msg.sender] = new_ids

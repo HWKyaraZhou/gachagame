@@ -40,9 +40,9 @@ async function startBattle() {
     const enemyRarity = Math.min(5, playerCharacter.rarity + Math.floor(Math.random() * 2));
     const enemy = {
         rarity: enemyRarity,
-        attack: Math.floor(12 * enemyRarity * (0.8 + Math.random() * 0.4)),
-        defense: Math.floor(6 * enemyRarity * (0.8 + Math.random() * 0.4)),
-        hp: Math.floor(62 * enemyRarity * (0.8 + Math.random() * 0.4))
+        attack: Math.floor(11 * enemyRarity * (0.8 + Math.random() * 0.4)),
+        defense: Math.floor(5 * enemyRarity * (0.8 + Math.random() * 0.4)),
+        hp: Math.floor(55 * enemyRarity * (0.8 + Math.random() * 0.4))
     };
 
     // Set up battle state
@@ -99,6 +99,10 @@ function updateBattleUI() {
         enemyMaxHP.textContent = '0';
         playerHPBar.style.width = '0%';
         enemyHPBar.style.width = '0%';
+
+        // Add warning about permanent character loss
+        battleLog.innerHTML = '<p><strong>⚠️ WARNING:</strong> If your character is defeated in battle, they will be lost forever!</p>' +
+            '<p>Select a character and start a new battle.</p>';
 
         return;
     }
@@ -238,17 +242,32 @@ async function endBattleWithVictory() {
 }
 
 // End battle with defeat
-function endBattleWithDefeat() {
+async function endBattleWithDefeat() {
     // Update battle state
     currentBattle.inProgress = false;
 
     // Update UI
-    battleLog.innerHTML += `<p class="defeat-message">Defeat! Your character was defeated.</p>`;
+    battleLog.innerHTML += `<p class="defeat-message">Defeat! Your character was defeated and lost forever!</p>`;
     attackButton.style.display = 'none';
     endBattleBtn.style.display = 'inline-block';
     battleLog.scrollTop = battleLog.scrollHeight;
 
-    showNotification("Battle lost! No reward.", "error");
+    try {
+        // Remove character from contract
+        const tx = await contract.removeDefeatedCharacter(currentBattle.playerCharacter.id);
+
+        // Wait for transaction confirmation
+        showNotification("Character being removed...", "info");
+        await tx.wait();
+
+        // Refresh character inventory
+        await loadCharacters();
+
+        showNotification("Your character was defeated and lost forever!", "error");
+    } catch (error) {
+        console.error("Failed to remove character:", error);
+        showNotification("Failed to remove character: " + (error.data?.message || error.message), "error");
+    }
 }
 
 // End battle and reset
