@@ -28,23 +28,23 @@ async function startBattle() {
         showNotification("Please select a character to battle", "error");
         return;
     }
-    
+
     // Find the selected character
     const playerCharacter = userCharacters.find(char => char.id == characterId);
     if (!playerCharacter) {
         showNotification("Character not found", "error");
         return;
     }
-    
-    // Create enemy with stats based on player character
-    const enemyRarity = Math.min(5, Math.max(2, playerCharacter.rarity));
+
+    // Create enemy with rarity equal to or higher than player's (up to 5)
+    const enemyRarity = Math.min(5, playerCharacter.rarity + Math.floor(Math.random() * 2));
     const enemy = {
         rarity: enemyRarity,
-        attack: Math.floor(10 * enemyRarity * (0.8 + Math.random() * 0.4)),
-        defense: Math.floor(5 * enemyRarity * (0.8 + Math.random() * 0.4)),
-        hp: Math.floor(50 * enemyRarity * (0.8 + Math.random() * 0.4))
+        attack: Math.floor(12 * enemyRarity * (0.8 + Math.random() * 0.4)),
+        defense: Math.floor(6 * enemyRarity * (0.8 + Math.random() * 0.4)),
+        hp: Math.floor(62 * enemyRarity * (0.8 + Math.random() * 0.4))
     };
-    
+
     // Set up battle state
     currentBattle = {
         playerCharacter: playerCharacter,
@@ -53,16 +53,16 @@ async function startBattle() {
         enemyCurrentHP: enemy.hp,
         inProgress: true
     };
-    
+
     // Update battle UI
     updateBattleUI();
-    
+
     // Show battle controls
     startBattleBtn.style.display = 'none';
     attackButton.style.display = 'inline-block';
     endBattleBtn.style.display = 'none';
     battleLog.innerHTML = '<p>Battle started! Click Attack to begin.</p>';
-    
+
     showNotification("Battle started!", "info");
 }
 
@@ -75,11 +75,11 @@ function updateBattleUI() {
             enemyDetails.innerHTML = '';
             return;
         }
-        
+
         // Show selected character
         const selectedCharacter = userCharacters.find(char => char.id == characterId);
         if (!selectedCharacter) return;
-        
+
         playerCharacterDetails.innerHTML = `
             <div class="character-avatar rarity-${selectedCharacter.rarity}">
                 ${selectedCharacter.rarity}★
@@ -91,7 +91,7 @@ function updateBattleUI() {
             </div>
         `;
         enemyDetails.innerHTML = '<p>Start battle to generate enemy</p>';
-        
+
         // Reset HP displays
         playerCurrentHP.textContent = '0';
         playerMaxHP.textContent = '0';
@@ -99,10 +99,10 @@ function updateBattleUI() {
         enemyMaxHP.textContent = '0';
         playerHPBar.style.width = '0%';
         enemyHPBar.style.width = '0%';
-        
+
         return;
     }
-    
+
     // Update player character details
     const player = currentBattle.playerCharacter;
     playerCharacterDetails.innerHTML = `
@@ -114,7 +114,7 @@ function updateBattleUI() {
             <p>DEF: ${player.defense}</p>
         </div>
     `;
-    
+
     // Update enemy details
     const enemy = currentBattle.enemy;
     enemyDetails.innerHTML = `
@@ -126,13 +126,13 @@ function updateBattleUI() {
             <p>DEF: ${enemy.defense}</p>
         </div>
     `;
-    
+
     // Update HP displays
     playerCurrentHP.textContent = currentBattle.playerCurrentHP;
     playerMaxHP.textContent = player.hp;
     enemyCurrentHP.textContent = currentBattle.enemyCurrentHP;
     enemyMaxHP.textContent = enemy.hp;
-    
+
     // Update HP bars
     const playerHPPercent = Math.max(0, (currentBattle.playerCurrentHP / player.hp) * 100);
     const enemyHPPercent = Math.max(0, (currentBattle.enemyCurrentHP / enemy.hp) * 100);
@@ -143,27 +143,27 @@ function updateBattleUI() {
 // Player attack function
 async function playerAttack() {
     if (!currentBattle.inProgress) return;
-    
+
     // Calculate damage with randomness
     const baseDamage = currentBattle.playerCharacter.attack;
     const damageVariation = 0.3; // ±30% damage variation
     const randomFactor = 0.7 + Math.random() * 0.6; // Between 0.7 and 1.3
-    
+
     // Calculate final damage
     let damage = Math.floor(baseDamage * randomFactor);
-    
+
     // Apply enemy defense (reduces damage)
     damage = Math.max(1, damage - Math.floor(currentBattle.enemy.defense / 2));
-    
+
     // Apply damage to enemy
     currentBattle.enemyCurrentHP = Math.max(0, currentBattle.enemyCurrentHP - damage);
-    
+
     // Update battle log
     battleLog.innerHTML += `<p>Your character attacks for ${damage} damage!</p>`;
-    
+
     // Update UI
     updateBattleUI();
-    
+
     // Check if enemy is defeated
     if (currentBattle.enemyCurrentHP <= 0) {
         await endBattleWithVictory();
@@ -177,31 +177,31 @@ async function playerAttack() {
 // Enemy attack function
 async function enemyAttack() {
     if (!currentBattle.inProgress) return;
-    
+
     // Add slight delay for better battle flow
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     // Calculate damage with randomness
     const baseDamage = currentBattle.enemy.attack;
     const damageVariation = 0.3; // ±30% damage variation
     const randomFactor = 0.7 + Math.random() * 0.6; // Between 0.7 and 1.3
-    
+
     // Calculate final damage
     let damage = Math.floor(baseDamage * randomFactor);
-    
+
     // Apply player defense (reduces damage)
     damage = Math.max(1, damage - Math.floor(currentBattle.playerCharacter.defense / 2));
-    
+
     // Apply damage to player
     currentBattle.playerCurrentHP = Math.max(0, currentBattle.playerCurrentHP - damage);
-    
+
     // Update battle log
     battleLog.innerHTML += `<p>Enemy attacks for ${damage} damage!</p>`;
     battleLog.scrollTop = battleLog.scrollHeight; // Auto-scroll to bottom
-    
+
     // Update UI
     updateBattleUI();
-    
+
     // Check if player is defeated
     if (currentBattle.playerCurrentHP <= 0) {
         endBattleWithDefeat();
@@ -212,24 +212,24 @@ async function enemyAttack() {
 async function endBattleWithVictory() {
     // Update battle state
     currentBattle.inProgress = false;
-    
+
     // Update UI
     battleLog.innerHTML += `<p class="victory-message">Victory! You defeated the enemy!</p>`;
     attackButton.style.display = 'none';
     endBattleBtn.style.display = 'inline-block';
     battleLog.scrollTop = battleLog.scrollHeight;
-    
+
     try {
         // Claim battle reward from contract
         const tx = await contract.claimBattleReward(currentBattle.playerCharacter.id);
-        
+
         // Wait for transaction confirmation
         showNotification("Claiming battle reward...", "info");
         await tx.wait();
-        
+
         // Update balance
         await updateBalance();
-        
+
         showNotification("Battle reward claimed: 0.0001 ETH", "success");
     } catch (error) {
         console.error("Failed to claim battle reward:", error);
@@ -241,13 +241,13 @@ async function endBattleWithVictory() {
 function endBattleWithDefeat() {
     // Update battle state
     currentBattle.inProgress = false;
-    
+
     // Update UI
     battleLog.innerHTML += `<p class="defeat-message">Defeat! Your character was defeated.</p>`;
     attackButton.style.display = 'none';
     endBattleBtn.style.display = 'inline-block';
     battleLog.scrollTop = battleLog.scrollHeight;
-    
+
     showNotification("Battle lost! No reward.", "error");
 }
 
@@ -266,13 +266,13 @@ function resetBattle() {
         enemyCurrentHP: 0,
         inProgress: false
     };
-    
+
     // Reset UI
     battleLog.innerHTML = '<p>Select a character and start a new battle.</p>';
     attackButton.style.display = 'none';
     endBattleBtn.style.display = 'none';
     startBattleBtn.style.display = 'inline-block';
-    
+
     // Update the battle UI
     updateBattleUI();
 }
@@ -283,7 +283,7 @@ function initBattle() {
     attackButton.addEventListener('click', playerAttack);
     endBattleBtn.addEventListener('click', endBattle);
     characterSelect.addEventListener('change', updateBattleUI);
-    
+
     // Hide battle buttons initially
     attackButton.style.display = 'none';
     endBattleBtn.style.display = 'none';

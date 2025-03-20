@@ -16,7 +16,7 @@ struct Character:
 
 # Game economic constants
 PULL_COST: constant(uint256) = 100000000000000  # 0.0001 ether
-BATTLE_REWARD: constant(uint256) = 100000000000000  # 0.0001 ether
+BATTLE_REWARD: constant(uint256) = 500000000000000  # 0.0005 ether
 
 # State variables
 characterIdCounter: uint256
